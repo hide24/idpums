@@ -14,7 +14,6 @@ services:
     depends_on:
       - idp
       - ums
-      - sp
     restart: always
 
   idp:
@@ -70,7 +69,6 @@ services:
       - db
       - ldap
       - idp
-      - tiqr
     restart: always
 
 #  tiqr:
