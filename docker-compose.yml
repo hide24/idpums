@@ -1,0 +1,84 @@
+version: '2'
+
+services:
+  httpd:
+    build:
+      context: ./httpd
+      args:
+        HOST_NAME: idp.rcos.nii.ac.jp
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "./httpd/certs:/opt/httpd/certs"
+    depends_on:
+      - idp
+      - ums
+      - sp
+    restart: always
+
+  idp:
+    image: hide24/shibboleth-idp-dockerized
+    volumes:
+      - './idp/shibboleth-idp:/opt/shibboleth-idp'
+    environment:
+      JETTY_MAX_HEAP: 512m
+      JETTY_BROWSER_SSL_KEYSTORE_PASSWORD: password
+    ports:
+      - '8443:8443'
+    depends_on:
+      - ldap
+    restart: always
+
+  ldap:
+    build: ./ldap
+    volumes:
+      - "./ldap/conf:/etc/ldap/slapd.d"
+      - "./ldap/data:/var/lib/ldap"
+    environment:
+      LDAP_ORGANISATION: 'your org'
+      LDAP_DOMAIN: 'foo.bar.org'
+      LDAP_ADMIN_PASSWORD: 'password'
+      LDAP_CONFIG_PASSWORD: 'config'
+    restart: always
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - "./db/data:/var/lib/mysql"
+    restart: always
+
+  ums:
+    build:
+      context: ./ums
+      args:
+        MYSQL_ROOT_PASSWORD: 'password'
+        LDAP_BASE_DN: 'dc=foo,dc=bar,dc=org'
+        LDAP_BIND_DN: 'cn=admin,dc=foo,dc=bar,dc=org'
+        LDAP_BIND_PASSWORD: 'password'
+        LDAP_CONFIG_PASSWORD: 'config'
+        LDAP_ACCOUNT_BASE_ORG: 'accounts'
+        IDP_HOST_NAME: idp.ir.rcos.nii.ac.jp
+        IDP_SCOPE: ir.rcos.nii.ac.jp
+        JETTY_KEYSTORE_PASSWORD: password
+    volumes:
+      - "./httpd/certs:/opt/httpd/certs"
+      - "./idp/shibboleth-idp:/opt/shibboleth-idp"
+    depends_on:
+      - db
+      - ldap
+      - idp
+      - tiqr
+    restart: always
+
+#  tiqr:
+#    build:
+#      context: ./tiqr
+#      args:
+#        SCOPE: 'rdm.nii.ac.jp'
+#        IDENTIFIER: 'tiqr.identifier.rdm.nii.ac.jp'
+#    volumes:
+#      - "./tiqr/idp:/idp"
+

@@ -1,0 +1,23 @@
+dn: cn=gakunin,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: gakunin
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.1 NAME ( 'jasn' 'jaSurname' ) SUP s
+ n )
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.2 NAME ( 'jaGivenName' ) SUP givenN
+ ame )
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.3 NAME ( 'jaDisplayName' ) SUP disp
+ layName )
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.4 NAME ( 'jao' 'jaOrganizationName'
+  ) SUP o )
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.5 NAME ( 'jaou' 'jaOrganizationalUn
+ itName' ) SUP ou )
+olcAttributeTypes: ( 1.3.6.1.4.1.32264.1.1.6 NAME ( 'gakuninScopedPersonalUniq
+ ueCode' ) EQUALITY caseIgnoreMatch SYNTAX '1.3.6.1.4.1.1466.115.121.1.15' )
+olcObjectClasses: ( 1.3.6.1.4.1.32264.1.2.1 NAME 'jaPerson' AUXILIARY MUST jas
+ n MAY ( jaGivenName $ jaDisplayName $ gakuninScopedPersonalUniqueCode $ jao $
+  jaou ) )
+olcObjectClasses: ( 1.3.6.1.4.1.32264.1.2.2 NAME 'jaOrganization' AUXILIARY MA
+ Y ( jao $ jaou ) )
+olcObjectClasses: ( 1.3.6.1.4.1.32264.1.2.3 NAME 'gakuninPerson' AUXILIARY MAY
+  ( gakuninScopedPersonalUniqueCode ) )
+
